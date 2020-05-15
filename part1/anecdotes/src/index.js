@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 
 const Anecdote = ({ anecdotes, selected, votes }) => {
-  console.log(selected)
+  //console.log(selected)
   return (
     <>
       <div>
@@ -28,7 +28,7 @@ const App = (props) => {
   const [selected, setSelected] = useState(0)
 
   const [votes, setVotes] = useState(Array.apply(null, new Array(anecdotes.length)).map(Number.prototype.valueOf, 0))
-  console.log(votes)
+  //console.log(votes)
 
   const onVote = (selected) => {
     const helper = [...votes]
@@ -51,11 +51,14 @@ const App = (props) => {
   return (
 
     <div>
+      <h1>Anecdote of the decade</h1>
       <Anecdote anecdotes={anecdotes} selected={selected} votes={votes} />
       <Button tag='next' handleClick={() => { setSelected(Math.floor(Math.random() * 6)) }} />
 
       <Button tag='vote' handleClick={() => { onVote(selected) }} />
-      <Button tag='best' handleClick={() => { setSelected(findMax(votes))}} />
+      {/* <Button tag='best' handleClick={() => { setSelected(findMax(votes))}} /> */}
+      <h2>Anecdote with the most votes</h2>
+      <Anecdote anecdotes={anecdotes} selected={findMax(votes)} votes={votes} />
     </div>
   )
 }
