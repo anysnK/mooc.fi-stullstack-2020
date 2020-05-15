@@ -1,0 +1,17 @@
+title create a new note spa
+
+
+
+note over Browser
+Browser executes local Java Script it fetched during initial page load
+
+js: fetch form element from the page, prevent default eventhandling,
+create and add new element in list, push new element to server
+end note
+Browser->Server: HTTP POST: https://fullstack-exampleapp.herokuapp.com/new_note_spa
+note over Server
+executes code to add the note to JSON
+end note
+Server-->Browser: HTTP Status 201: Created
+
+
