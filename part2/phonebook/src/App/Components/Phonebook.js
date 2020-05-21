@@ -1,20 +1,16 @@
 import React from 'react'
 
-/* const TableContent = ({persons}) => {
 
-} */
 
-const PhonebookTable = ({ persons }) => {
+const Phonebook = ({ persons, onClick }) => {
 
-    /* const tableContent = persons.map((person) => {
+    if (persons.length === 0) {
         return (
-            <tr key={person.name + person.number}>
-                <td>{person.name}</td><td>{person.number}</td>
-            </tr>
+            <>
+                No numbers found
+            </>
         )
-    }) */
-
-    //console.log(tableContent)
+    }
 
     return (
         <table>
@@ -29,6 +25,13 @@ const PhonebookTable = ({ persons }) => {
                     return (
                         <tr key={person.name + person.number}>
                             <td>{person.name}</td><td>{person.number}</td>
+                            <td>
+                                <button 
+                                    onClick={onClick}
+                                    value={person.id}>
+                                        delete
+                                </button>
+                            </td>
                         </tr>
                     )
                 })}
@@ -37,4 +40,4 @@ const PhonebookTable = ({ persons }) => {
     )
 }
 
-export default PhonebookTable
+export default Phonebook

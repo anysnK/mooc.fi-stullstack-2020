@@ -1,18 +1,16 @@
 import React from 'react'
-import Weather from './Weather'
 
 const CountryDisplay = ({ country }) => {
     //console.log('Country Display rendering: ', country)
-    
+
     const isEmpty = (obj) => {
         if (Object.keys(obj).length === 0) {
             return true
         }
         return false
     }
-    
-    
-    if(isEmpty(country)) {
+
+    if (isEmpty(country)) {
         //console.log('empty country received')
         return (<> </>)
     }
@@ -35,9 +33,7 @@ const CountryDisplay = ({ country }) => {
                         </li>)
                 })}
             </ul>
-            <img src={country.flag} alt="country_flag" width="250" height="150"  />
-            <h4>Weather</h4>
-            <Weather country={country} />
+            <img src={country.flag} alt="country_flag" width="250" height="150" />
         </>
     )
 }
