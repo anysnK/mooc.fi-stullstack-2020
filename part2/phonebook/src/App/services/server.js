@@ -1,29 +1,26 @@
 import axios from 'axios'
+
 const baseUrl = 'http://localhost:3001/persons'
 
 const getAll = () => {
-    return axios
-        .get(baseUrl)
-        .then(response => response.data)
-        .catch(error => console.log( 'error while getting',error))
+    const request = axios.get(baseUrl)
+    return request.then(response => response.data)
 }
 
-const addPerson = (newPerson) => {
-    return axios
-        .post(baseUrl, newPerson)
-        .then(response => response.data)
-        .catch(error => console.log( 'error while posting',error))
+const addPerson = newObject => {
+    const request = axios.post(baseUrl, newObject)
+    return request.then(response => response.data)
 }
 
-const deletePerson = (id) => {
-    return axios
-        .delete(baseUrl.concat(`/${id}`))
-        .then(response =>{ 
-            console.log(response)
-            return response.data})
-        .catch(error => console.log('error while deleting', error))
+const deletePerson = id => {
+    const request = axios.delete(`${baseUrl}/${id}`)
+    return request.then(response => response.data)
 }
 
+const updateNumber = (person, newNumber) => {
+    const newPerson = {name:person.name, number:newNumber, id:person.id}
+    const request = axios.put(`${baseUrl}/${person.id}`, newPerson)
+    return request.then(response => response.data)
+}
 
-
-export default {getAll, addPerson, deletePerson}
+export default { getAll, addPerson, deletePerson, updateNumber }

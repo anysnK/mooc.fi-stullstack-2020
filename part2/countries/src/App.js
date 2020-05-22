@@ -12,6 +12,9 @@ function App() {
   //console.log(weatherAPIKey)
   const [searchTerms, setSearchTerms] = useState([])
   const [data, setData] = useState([])
+  const [filter, setFilter] = useState('')
+  const [showCountry, setShowCountry] = useState({})
+  const [Weather, setWeather] = useState({})
 
   //import data from countries server
   useEffect(() => {
@@ -37,28 +40,16 @@ function App() {
       }
 
       setSearchTerms(newSearch)
-
     }
-
   }, [data])
 
-
-  const [filter, setFilter] = useState('')
-  const [showCountry, setShowCountry] = useState({})
-  const [Weather, setWeather] = useState({})
-
-
   const handleFilterChange = (event) => {
-
+    //event.preventDefault()
     setFilter(event.target.value)
   }
 
-
-
   const handleShowCountry = (event) => {
-    /* api call http://api.weatherstack.com/current
-        ? access_key = YOUR_ACCESS_KEY
-        & query = New York */
+    //event.preventDefault()
     setShowCountry(event)
   }
 
@@ -92,8 +83,6 @@ function App() {
         console.log(error)
       })
   }, [showCountry])
-
-
 
   return (
     <>

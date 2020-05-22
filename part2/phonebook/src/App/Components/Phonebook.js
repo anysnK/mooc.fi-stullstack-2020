@@ -23,7 +23,7 @@ const Phonebook = ({ persons, onClick }) => {
             <tbody>
                 {persons.map((person) => {
                     return (
-                        <tr key={person.name + person.number}>
+                        <tr key={person.id}>
                             <td>{person.name}</td><td>{person.number}</td>
                             <td>
                                 <button 

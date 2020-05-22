@@ -3,6 +3,7 @@ import Phonebook from './App/Components/Phonebook'
 import Input from './App/Components/Input'
 import Filter from './App/Components/Filter'
 import services from './App/services/server'
+import Notification from './App/Components/Notification'
 
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [notification, setNotification] = useState({})
 
 
     useEffect(() => {
@@ -20,27 +22,66 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        //console.log('button clicked', event.target)
+
+        //update persons from server
         services
             .getAll()
             .then(fetchedPersons => setPersons(fetchedPersons))
-            .catch((error) => { console.log('error while fetching data:', error) })
-            .then(() => {
-                let names = persons.map(person => person.name)
-                if (names.includes(newName)) {
-                    window.alert(`Phonebook already contains ${newName}`)
-                    return
-                }
+            .then((response) => {
+                //check if person exists already and has the same number at the same time
+                if (personExists()) {
+                    //person already exists with same number
+                    displayNotification('error', 'identical entry already exists')
+                } else if (persons.map(person => person.name).includes(newName)) {
 
-                let numbers = persons.map(person => person.number)
-                if (numbers.includes(newNumber)) {
-                    window.alert(`Phonebook already contains person with number ${newNumber}`)
-                    return
+                    if (window.confirm('Person already exists with different number. Update?')) {
+                        //update number
+                        let singlePerson = persons.filter(person => person.name === newName)[0]
+                        services
+                            .updateNumber(singlePerson, newNumber)
+                            .then((response) => {
+                                //console.log('success?', response)
+                                let helper = [...persons]
+                                let index = helper.findIndex(person => person.name === newName)
+                                helper[index].number = newNumber
+                                setPersons(helper)
+                                displayNotification('success', 'Number updated')
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                displayNotification('error', 'couldnt update number, entry not found')
+                            })
+                    }
+                } else {
+                    //person doesnt exist 
+                    services
+                        .addPerson({
+                            name: newName,
+                            number: newNumber
+                        })
+                        .then((response) => {
+                            displayNotification('success', `added ${newName}`)
+                            setPersons([...persons].concat(response))
+                        })
+                        .catch(error => displayNotification('error', `there was a problem adding ${newName} to the server`))
                 }
-
-                services.addPerson({ name: newName, number: newNumber, id: persons.length + 1 })
-                    .then(() => setPersons([...persons].concat({ name: newName, number: newNumber, id: persons.length + 1 })))
             })
+    }
+
+    const personExists = () => {
+        return persons.reduce((exists, person) => {
+            return (exists
+                || (person.name === newName
+                    && person.number === newNumber))
+        }, false)
+    }
+
+    const displayNotification = (type, message) => {
+        setNotification({ type: type, message: message })
+        setTimeout(() => {
+            //console.log('resetting notification')
+            setNotification({})
+        }, 5000)
     }
 
     const handleNewNameChange = (event) => {
@@ -63,13 +104,20 @@ const App = () => {
 
     const handleDeleteButton = (event) => {
         event.preventDefault()
-        if (window.confirm('Do you really want to delete this person?')) {
-            let targetId = event.target.value
-            services.deletePerson(targetId)
+        if (window.confirm('Do you really want to delete this entry?')) {
+
+            let targetId = Number(event.target.value)
+
+            services
+                .deletePerson(targetId)
                 .then((response) => {
-                    console.log(response)
-                    services.getAll()
-                        .then((updatedPersons) => setPersons(updatedPersons))
+                    setPersons(persons.filter(p => { return (p.id !== targetId) }))
+
+                })
+                .then(() => displayNotification('success', 'person was deleted'))
+                .catch((error) => {
+                    displayNotification('error', 'could not delete this entry, not present on the server')
+                    setPersons(persons.filter(person => person.id !== targetId))
                 })
 
         }
@@ -78,9 +126,12 @@ const App = () => {
     }
 
 
+
+
     return (
         <div>
             <h1>Phonebook</h1>
+            <Notification notification={notification} />
             <h3>Add a new person to Phonebook</h3>
             <Input onClick={addPerson}
                 newName={newName}
